@@ -1,0 +1,60 @@
+---
+title: "Shiny"
+author: Els
+date: 20-12-2017
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+setwd("~/Coursera Data Science/M09/W4")
+```
+
+## Shiny App
+
+The shiny app makes histograms of the dataset Rocks which is provided by the dataset package. The user can choose one of the four variables (area, peri, perm and shape) of the dataset. This variable will be used for the histogram. Next to that, the user can choose how many breaks will be used for the histogram. 
+
+![](~/Coursera Data Science/M09/W4/Knipsel.JPG)
+
+## Rock Dataset
+A short preview of the rock dataset:
+```{r}
+data(rock)
+data<-rock
+head(rock)
+```
+
+The shinyapps website didn't want to show the graphs after I published them. They worked fine in the R-envrionment, but when using the app from the website, it gave en error that the data couldn't be found. Therefore, I manually created a dataframe with the same values as the original Rock dataset.
+
+## UI Script
+The shiny app consists of a UI script and a server script. This is the UI script:
+
+```
+shinyUI(fluidPage(
+    headerPanel("Histograms of the Rock dataset"),
+    sidebarPanel(
+        radioButtons('variable','Which variable should be used 
+        in the histogram', choices = colnames(dataset)),
+        sliderInput('breaks', 'How many breaks in the histogram', 5,20,10),
+        h5("Documentation"),
+        h6("This app makes histograms of the dataset Rocks which is provided 
+        by the dataset package. The user can choose one of the four variables
+        (area, peri, perm and shape) of the dataset. This variable will....,
+    mainPanel(plotOutput('Plot', height = "700px"))))
+```
+
+## Server Script
+This is the Server script:
+```
+shinyServer(function(input, output) {
+    
+    output$Plot <- renderPlot({
+        
+        x<-dataset[,input$variable]
+        hist(x, breaks=input$breaks, 
+        main=paste("Histogram of",input$variable))
+        
+    })
+    
+})
+```
